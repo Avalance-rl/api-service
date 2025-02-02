@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/IBM/sarama"
-	"github.com/avalance-rl/cryptobot-pkg/logger"
+	"github.com/avalance-rl/cryptobot/pkg/logger"
 	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
 	"go.uber.org/zap"
 	"strconv"
@@ -66,14 +66,17 @@ func New(
 }
 
 func (u *usecase) Run(ctx context.Context) error {
-	ticker := time.NewTicker(time.Second * u.config.updateInterval)
+	u.log.Info("starting currency service")
+	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ctx.Done():
+			u.log.Info("context canceled", zap.Error(ctx.Err()))
 			return ctx.Err()
 		case <-ticker.C:
+
 			if err := u.updatePrices(ctx); err != nil {
 				u.log.Error("error updating prices", zap.Error(err))
 			}
@@ -98,18 +101,15 @@ func (u *usecase) updatePrices(ctx context.Context) error {
 }
 
 func (u *usecase) updateCurrencyPrice(ctx context.Context, name string) error {
-	// Получаем цену с биржи
 	currency, err := u.provider.FetchPrice(ctx, name)
 	if err != nil {
 		return fmt.Errorf("failed to fetch currency: %w", err)
 	}
 
-	// Сохраняем в кэш
-	if err := u.service.SavePrice(ctx, *currency); err != nil {
-		return fmt.Errorf("failed to save currency to cache: %w", err)
-	}
+	//if err := u.service.SavePrice(ctx, *currency); err != nil {
+	//	return fmt.Errorf("failed to save currency to cache: %w", err)
+	//}
 
-	// Публикуем в Kafka
 	if err := u.publishPriceWithRetry(ctx, *currency); err != nil {
 		return fmt.Errorf("failed to publish currency: %w", err)
 	}

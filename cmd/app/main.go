@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/IBM/sarama"
-	"github.com/avalance-rl/cryptobot-pkg/logger"
+	"github.com/avalance-rl/cryptobot/pkg/logger"
 	"github.com/avalance-rl/cryptobot/services/api-service/internal/adapter/repository"
 	"github.com/avalance-rl/cryptobot/services/api-service/internal/config"
 	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/service"
@@ -22,17 +23,15 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer cancel()
 
-	// Инициализируем логгер
 	log := logger.New()
 	defer log.Sync()
 
-	// Загружаем конфигурацию
 	cfg, err := config.Load(os.Getenv("CONFIG_FILE"))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	log.Info(cfg.APIKey)
 
-	// Настраиваем Kafka producer
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
 	kafkaConfig.Producer.Retry.Max = 5
@@ -43,9 +42,8 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	defer producer.Close()
-
-	// Создаем провайдер цен
-	priceProvider := currency.NewExchangeProvider()
+	fmt.Println(cfg.APIKey)
+	priceProvider := currency.NewExchangeProvider(cfg.APIKey)
 
 	rdb := redis.Client{}
 	repo := repository.NewCurrencyRepository(&rdb)
@@ -63,14 +61,12 @@ func main() {
 		priceProvider,
 	)
 
-	// Запускаем административный сервер для метрик
 	go func() {
 		if err := runAdminServer(":8081"); err != nil {
 			log.Fatal(err.Error())
 		}
 	}()
 
-	// Запускаем основной сервис
 	go func() {
 		if err := usc.Run(ctx); err != nil {
 			log.Fatal(err.Error())
@@ -86,7 +82,6 @@ func main() {
 	<-ctx.Done()
 	log.Info("shutdown signal received")
 
-	// Graceful shutdown
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
 
@@ -100,12 +95,10 @@ func main() {
 func runAdminServer(addr string) error {
 	mux := http.NewServeMux()
 
-	// Хелсчек эндпоинт
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// Метрики Prometheus
 	mux.Handle("/metrics", promhttp.Handler())
 
 	return http.ListenAndServe(addr, mux)
