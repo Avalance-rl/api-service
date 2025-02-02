@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
 )
 

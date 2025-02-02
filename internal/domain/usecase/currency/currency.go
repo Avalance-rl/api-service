@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/IBM/sarama"
 	"github.com/avalance-rl/cryptobot/pkg/logger"
 	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
 	"go.uber.org/zap"
-	"strconv"
-	"time"
 )
 
 type Service interface {

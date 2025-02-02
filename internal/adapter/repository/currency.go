@@ -3,10 +3,11 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
-	"github.com/redis/go-redis/v9"
 	"strconv"
 	"time"
+
+	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
+	"github.com/redis/go-redis/v9"
 )
 
 const ttl time.Duration = 60 * time.Second

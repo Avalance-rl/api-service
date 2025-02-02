@@ -1,8 +1,9 @@
 package currency
 
 import (
-	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
 	"strconv"
+
+	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
 )
 
 type GetDTO struct {

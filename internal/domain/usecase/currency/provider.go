@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
 	"io"
 	"net/http"
+
+	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
 )
 
 type ExchangeProvider struct {

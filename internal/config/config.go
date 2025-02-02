@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"time"
+
 	baseConfig "github.com/avalance-rl/cryptobot/pkg/config"
 	"github.com/spf13/viper"
-	"time"
 )
 
 type ApiConfig struct {
