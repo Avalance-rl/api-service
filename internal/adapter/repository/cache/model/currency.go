@@ -1,7 +1,7 @@
 package model
 
 import (
-	"cryptobot/api-service/internal/domain/entity"
+	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/entity"
 )
 
 type Currency struct {
