@@ -2,15 +2,26 @@ package config
 
 import (
 	"fmt"
-	baseConfig "github.com/avalance-rl/cryptobot/pkg/config"
+	baseConfig "github.com/avalance-rl/cryptobot-pkg/config"
 	"github.com/spf13/viper"
+	"time"
 )
 
 type ApiConfig struct {
 	*baseConfig.Config
 	Redis struct {
 		Host string
-		Port int
+		Port string
+		Pass string
+		DB   int
+	}
+	Kafka struct {
+		Brokers        []string
+		Topic          string
+		UpdateInterval time.Duration
+		Currencies     []string
+		RetryAttempts  int
+		RetryDelay     time.Duration
 	}
 }
 
@@ -29,8 +40,13 @@ func Load(path string) (*ApiConfig, error) {
 		return nil, fmt.Errorf("failed to read api config: %w", err)
 	}
 
-	if err := viper.UnmarshalKey("jwt", &config.Redis); err != nil {
+	if err := viper.UnmarshalKey("redis", &config.Redis); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal redis config: %w", err)
 	}
+
+	if err := viper.UnmarshalKey("kafka", &config.Kafka); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal kafka config: %w", err)
+	}
+
 	return config, nil
 }

@@ -1,4 +1,4 @@
-package cache
+package repository
 
 import (
 	"context"
@@ -21,16 +21,24 @@ func NewCurrencyRepository(client *redis.Client) *currencyRepository {
 	}
 }
 
-func (c *currencyRepository) FindPrice(ctx context.Context, name string) (float64, error) {
+func (c *currencyRepository) FindPrice(ctx context.Context, name string) (*entity.Currency, error) {
 	val, err := c.client.Get(ctx, name).Result()
 	if errors.Is(err, redis.Nil) {
-		return 0, nil
+		return nil, nil
 	}
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	return strconv.ParseFloat(val, 64)
+	price, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.Currency{
+		Name:  name,
+		Price: price,
+	}, nil
 }
 
 func (c *currencyRepository) SetPrice(ctx context.Context, currency entity.Currency) error {

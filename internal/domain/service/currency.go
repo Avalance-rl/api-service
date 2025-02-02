@@ -6,7 +6,7 @@ import (
 )
 
 type CurrencyFinder interface {
-	FindPrice(ctx context.Context, name string) (float64, error)
+	FindPrice(ctx context.Context, name string) (*entity.Currency, error)
 }
 
 type CurrencySetter interface {
@@ -25,7 +25,7 @@ func NewCurrencyService(f CurrencyFinder, s CurrencySetter) *currencyService {
 	}
 }
 
-func (s *currencyService) GetPrice(ctx context.Context, name string) (float64, error) {
+func (s *currencyService) GetPrice(ctx context.Context, name string) (*entity.Currency, error) {
 	return s.currencyFinder.FindPrice(ctx, name)
 }
 
