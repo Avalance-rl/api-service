@@ -31,7 +31,7 @@ type config struct {
 }
 
 type usecase struct {
-	service  Service
+	//service  Service
 	producer sarama.SyncProducer
 	provider PriceProvider
 	log      *logger.Logger
@@ -40,7 +40,7 @@ type usecase struct {
 }
 
 func New(
-	service Service,
+	//service Service,
 	producer sarama.SyncProducer,
 	logger *logger.Logger,
 	updateInterval time.Duration,
@@ -51,7 +51,7 @@ func New(
 	provider PriceProvider,
 ) *usecase {
 	return &usecase{
-		service:  service,
+		//service:  service,
 		producer: producer,
 		log:      logger,
 		config: config{
@@ -68,7 +68,7 @@ func New(
 
 func (u *usecase) Run(ctx context.Context) error {
 	u.log.Info("starting currency service")
-	ticker := time.NewTicker(time.Minute)
+	ticker := time.NewTicker(u.config.updateInterval)
 	defer ticker.Stop()
 
 	for {

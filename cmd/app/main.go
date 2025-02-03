@@ -11,12 +11,9 @@ import (
 
 	"github.com/IBM/sarama"
 	"github.com/avalance-rl/cryptobot/pkg/logger"
-	"github.com/avalance-rl/cryptobot/services/api-service/internal/adapter/repository"
 	"github.com/avalance-rl/cryptobot/services/api-service/internal/config"
-	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/service"
 	"github.com/avalance-rl/cryptobot/services/api-service/internal/domain/usecase/currency"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
@@ -46,12 +43,12 @@ func main() {
 	fmt.Println(cfg.APIKey)
 	priceProvider := currency.NewExchangeProvider(cfg.APIKey)
 
-	rdb := redis.Client{}
-	repo := repository.NewCurrencyRepository(&rdb)
-	svc := service.NewCurrencyService(repo, repo)
+	//rdb := redis.Client{}
+	//repo := repository.NewCurrencyRepository(&rdb)
+	//svc := service.NewCurrencyService(repo, repo)
 
 	usc := currency.New(
-		svc,
+		//svc,
 		producer,
 		log,
 		cfg.Kafka.UpdateInterval,
